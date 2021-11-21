@@ -30,7 +30,7 @@ def register():
     password = request.form.get("user-pw")
     try:
         create_user(name, email, password)
-        return redirect(url_for("login"))
+        return redirect(url_for("/login"))
     except:
         return "Szerveroldali hiba történt! :("
 
@@ -43,10 +43,12 @@ def log_user_in():
     else:
         user = request.form.get("user-name")
         password = request.form.get("user-pw")
-        check_login = check_user_login(user,password)
+        check_login = check_user_login(user, password)
         if check_login is not None:
             session["logged_in"] = True
             session["userid"] = check_login.id
+
+
 @app.route("/start", methods=["POST", "GET"])
 def start():
     return "Sikeresen beléptél!"
@@ -58,8 +60,12 @@ def create_user(name, email, password):
     add_user = User(name=name, email=email, password=hash_pw)
     db.add(add_user)
     db.commit()
-def check_user_login(user,password):
+
+
+def check_user_login(user, password):
     login = db.query(User).filter_by(name=user, password=hash(password)).first()
     return login
+
+
 if __name__ == '__main__':
     app.run()
