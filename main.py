@@ -23,14 +23,14 @@ def new_user():
     return render_template("register.html")
 
 
-@app.route("/register,", methods=["POST"])
+@app.route("/register", methods=["POST"])
 def register():
     name = request.form.get("user-name")
     email = request.form.get("user-email")
     password = request.form.get("user-pw")
     try:
         create_user(name, email, password)
-        return redirect(url_for("/login"))
+        return redirect(url_for("login"))
     except:
         return "Szerveroldali hiba történt! :("
 
