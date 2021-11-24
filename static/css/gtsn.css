@@ -5,7 +5,7 @@
     --purple: #330C2F;
     --pink: #FFAFC5;
     --mpink: #FFCFD2;
-    --orage: #E53D00;
+    --orange: #E53D00;
 }
 body
 {
@@ -43,19 +43,83 @@ button
     top: 0%;
     left: 0%;
     right: 0%;
-    font-size: 16px;
+    font-size: 64px;
 }
 .input-text
 {
-    padding-top: 60px
-    position: absolute;
-    left: 50%;
-    right: 50%;
-    font-size: 18px;
+    padding: 20px;
+    margin: 10px;
+    left: 25px;
+}
+.main-text
+{
+    font-size: 38px;
 }
 a
 {
     color: var(--purple);
     text-decoration:none;
     font-size: 16px;
+}
+
+/* chechmark modositasok */
+.checkbox-container
+{
+    display: inline;
+    position: relative;
+    padding-left: 35px;
+    cursor: pointer;
+    font-size: 20px;
+    margin 30px;
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+}
+.checkmark
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: white;
+}
+.checkbox-container input
+{
+    position: absolute;
+    opacity: 0;
+    height: 0;
+    width: 0;
+    cursor: pointer;
+}
+.checkbox-container .checkmark:after
+{
+    transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width:0 3px 3px 0;
+    left: 10px;
+    top: 5px;
+}
+.checkbox-container:hover input ~ .checkmark
+{
+    background-color: grey;
+}
+.checkbox-container input:checked ~ .checkmark
+{
+    background-color: var(--orange);
+}
+.checkbox-container input:checked ~ .checkmark:after-event
+{
+    display:block;
+}
+.checkmark:after
+{
+    content:"";
+    position: absolute;
+    diplay: none;
 }

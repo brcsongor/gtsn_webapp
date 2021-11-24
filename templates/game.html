@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{%block main %}
+    <div class="curr_diff">Nehézség: {{nehezseg}}</div>
+    <div class="wrapper">
+        {% if error %}
+            <div class="warning">
+                <span class="txt">
+                    Ez szerintem nem szám.. :O
+                </span>
+            </div>
+        {% endif %}
+        <span class="title-text">Tippelj egy számot!</span>
+        <form action="/result" method="post">
+            <input type="text" class="input-text" name="guess_data" placeholder="Mi a titkos szám?">
+            <button>Tippelek</button>
+        </form>
+    </div>
+{%endblock main%}

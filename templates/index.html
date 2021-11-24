@@ -1,3 +1,25 @@
 {% extends "base.html" %}
 {% block main %}
+    <div class="wrapper">
+        <span class="title-text">Guess The Secret Number</span>
+        <div class="main-text">Kérlek válassz nehézséget</div>
+
+        <form action="/game" method="post">
+            <label class="checkbox-container">Könnyű
+                <input type="checkbox" name="nehezseg" value="0">
+                <span class="checkmark"></span>
+            </label>
+            <label class="checkbox-container">Közepes
+                <input type="checkbox" name="nehezseg" value="1">
+                <span class="checkmark"></span>
+            </label>
+            <label class="checkbox-container">Nehéz
+                <input type="checkbox" name="nehezseg" value="2">
+                <span class="checkmark"></span>
+            </label>
+            <div class="button-container">
+                <button type="submit">Mehet</button>
+            </div>
+        </form>
+    </div>
 {% endblock main%}
