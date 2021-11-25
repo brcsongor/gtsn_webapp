@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block main %}
+    <div class="curr_diff">Nehézség: {{nehezseg}}</div>
+    <div class="wrapper">
+        <div class="message">
+            {{msg}}
+        </div>
+        {% if win == True %}
+            <div><a href="/game?newGame=1">Újra játszom</a></div>
+            <div><a href="/start">Új nehézséget választok</a></div>
+        {% else %}
+            <div><a href="/game">Újra tippelek</a></div>
+            <div><a href="/start">Másik nehézséget választok</a></div>
+        {% endif %}
+    </div>
+{% endblock main%}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block main %}
+    Statok: <br>
+    {% for d in data %}
+        {{d}}:
+            {% for e in data[d] %}
+                {{e}} - {{data[d][e]}}
+            {% endfor %}
+            <br>
+    {% endfor %}
+
+{% endblock main %}

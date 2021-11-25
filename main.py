@@ -69,23 +69,30 @@ def start():
 @app.route("/game", methods=["POST", "GET"])
 def game():
     # mindegy hanyat jelol be a legkonybbel inditunk jatekot
-    error = None
+    new_game = False
+    if request.args.get("newGame") is not None:
+        new_game = True
     if session.get("logged_in") == True:
+        # ternary operator
+        error = True if request.args.get("error") is not None else False
         difficulty = None
         try:
             difficulty = request.form.getlist("nehezseg")[0]
             session["nehezseg"] = difficulty
         except:
-            pass
-
+            if session.get("nehezseg"):
+                if session.get("nehezseg") != None:
+                    difficulty = session["nehezseg"]
+            else:
+                redirect(url_for("start"))
         calc_range = difficulties[difficulty]
         actual_secret = None
-        if session.get("secret-number"):
-            actual_secret = session["secret-number"]
+        if session.get("secret_number"):
+            actual_secret = session["secret_number"]
 
         resp = make_response(render_template("game.html", error=error, nehezseg=difficulties_names[difficulty]))
 
-        if actual_secret is None or difficulty != session.get("nehezseg"):
+        if new_game is True or actual_secret is None or difficulty != session.get("nehezseg"):
             secret_number = r.randint(calc_range[0], calc_range[1])
             session["secret_number"] = str(secret_number)
             session["difficulty"] = difficulty
@@ -96,13 +103,74 @@ def game():
 
 @app.route("/result", methods=["POST", "GET"])
 def result():
-    guess = int(request.form.get("guess_data"))
+    guess = None
+    try:
+        guess = int(request.form.get("guess_data"))
+    except:
+        return redirect(url_for("game", error=True))
+    if session.get("tipp") is None:
+        session["tipp"] = 0
     secret_number = int(session["secret_number"])
-    # print(f"{secret_number}, a szám pedig {guess}")
-    return "Teszt"
+    if guess == secret_number:
+        session["tipp"] = session["tipp"] + 1
+        insert_victory(session["tipp"], session["nehezseg"])
+        session["tipp"] = 0
+        message = f"Talált a titkos szám tényleg {guess} volt!"
+        return render_template("result.html", msg=message, win=True)
+    elif guess > secret_number:
+        session["tipp"] = session["tipp"] + 1
+        message = f"A titkos szám kisebb mint {guess}!"
+        return render_template("result.html", msg=message)
+    else:
+        session["tipp"] = session["tipp"] + 1
+        message = f"A titkos szám nagyobb mint {guess}!"
+        return render_template("result.html", msg=message)
 
+
+@app.route("/stats")
+def get_stats():
+    statbuilder = {}
+    users = get_all_user_stats()
+
+    for s_user in users:
+        user = s_user[0]
+        pont = s_user[1]
+        if user.name in statbuilder:
+            statbuilder[user.name].append({"pontok":1,"tipp": pont.tippek, "nehezseg": pont.nehezseg})
+        else:
+            statbuilder[user.name] = []
+            stats = stat_builder(statbuilder)
+    return render_template("stats.html", data=stats)
+
+def stat_builder(stats):
+    users = {}
+    for stat in stats:
+        users[stat] = {}
+    for ustat in stats:
+        tmp_stat = stats[ustat]
+        ret_stat = {}
+        for v in tmp_stat:
+            nehezseg = v["nehezseg"]
+            nehezseg_lv = difficulties_names[nehezseg]
+            if nehezseg_lv in ret_stat:
+                ret_stat[nehezseg_lv] = ret_stat[nehezseg_lv]+1
+            else:
+                ret_stat[nehezseg_lv] = 1
+        users[ustat] = ret_stat
 
 # CRUDE függvények: create, read, update, delete
+def get_all_user_stats():
+    stats = db.query(User, Pontok).filter(Pontok.user == User.id)
+    return stats
+
+
+def insert_victory(tippek, nehezseg):
+    user = int(session["userid"])
+    trans = Pontok(tippek=tippek, nehezseg=nehezseg, user=user)
+    db.add(trans)
+    db.commit()
+
+
 def create_user(name, email, password):
     hash_pw = hash(password)
     add_user = User(name=name, email=email, password=hash_pw)
