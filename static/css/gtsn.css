@@ -55,6 +55,10 @@ button
 {
     font-size: 38px;
 }
+.txt
+{
+    color: var(--purple)
+}
 a
 {
     color: var(--purple);

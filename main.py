@@ -110,7 +110,15 @@ def result():
         return redirect(url_for("game", error=True))
     if session.get("tipp") is None:
         session["tipp"] = 0
-    secret_number = int(session["secret_number"])
+    secret_number = 0
+    if app.config("TESTING") == True:
+        session["logged_in"] = True
+        session["tipp"] = 0
+        session["nehezseg"] = 0
+        session["userid"] = 1
+        secret_number = int(request.form.get("test_secret_number"))
+    else:
+        secret_number = int(session["secret_number"])
     if guess == secret_number:
         session["tipp"] = session["tipp"] + 1
         insert_victory(session["tipp"], session["nehezseg"])
@@ -136,11 +144,12 @@ def get_stats():
         user = s_user[0]
         pont = s_user[1]
         if user.name in statbuilder:
-            statbuilder[user.name].append({"pontok":1,"tipp": pont.tippek, "nehezseg": pont.nehezseg})
+            statbuilder[user.name].append({"pontok": 1, "tipp": pont.tippek, "nehezseg": pont.nehezseg})
         else:
             statbuilder[user.name] = []
             stats = stat_builder(statbuilder)
     return render_template("stats.html", data=stats)
+
 
 def stat_builder(stats):
     users = {}
@@ -153,10 +162,11 @@ def stat_builder(stats):
             nehezseg = v["nehezseg"]
             nehezseg_lv = difficulties_names[nehezseg]
             if nehezseg_lv in ret_stat:
-                ret_stat[nehezseg_lv] = ret_stat[nehezseg_lv]+1
+                ret_stat[nehezseg_lv] = ret_stat[nehezseg_lv] + 1
             else:
                 ret_stat[nehezseg_lv] = 1
         users[ustat] = ret_stat
+
 
 # CRUDE függvények: create, read, update, delete
 def get_all_user_stats():
